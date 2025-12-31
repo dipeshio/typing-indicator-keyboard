@@ -208,11 +208,7 @@ body {
     align-content: flex-start;
     gap: 0.5rem;
     user-select: none;
-    /* Auto-scroll logic requires absolute positioning usually, 
-       but we can simply scroll the container. */
-    height: 100%;
-    overflow-y: hidden;
-    /* We will scroll via JS scrollTo or transform */
+    /* Auto-height allows content to grow, enabling container scroll */
     width: 100%;
     border: none;
     background: transparent;
