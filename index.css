@@ -149,17 +149,21 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
+    /* Align flush left */
     overflow-y: auto;
-    padding: 3rem 4rem;
+    padding: 3rem;
+    /* Standard padding */
     gap: 3rem;
-    max-width: 1000px;
-    margin: 0 auto;
+    height: 100vh;
+    /* Ensure full height for scrolling */
 }
 
 /* ===== Check Area (Timer) ===== */
 .check-area {
     width: 100%;
+    max-width: 900px;
+    /* Match test area width */
     display: flex;
     justify-content: flex-end;
     margin-bottom: -2rem;
