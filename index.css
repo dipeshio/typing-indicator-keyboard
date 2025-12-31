@@ -55,8 +55,7 @@ body {
     color: var(--text-primary);
     min-height: 100vh;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    /* Removed center alignment to allow flush left */
     overflow: hidden;
 }
 
@@ -64,7 +63,7 @@ body {
 .app-layout {
     display: flex;
     width: 100%;
-    max-width: 1400px;
+    /* Removed max-width to fill screen */
     height: 100vh;
     overflow: hidden;
 }
