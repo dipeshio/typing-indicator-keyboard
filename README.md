@@ -2,6 +2,8 @@
 
 A minimalistic typing test with a reactive 62-key visual keyboard.
 
+![Typing Indicator Keyboard Preview](image.png)
+
 ## Features
 
 - 60% ANSI keyboard layout with glow-on-keypress effect
