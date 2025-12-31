@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Indicator Keyboard</title>
+    <meta name="description" content="A minimalistic typing test with a reactive 62-key visual keyboard.">
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="header">
+            <h1>Typing Indicator</h1>
+        </header>
+
+        <main class="main-content">
+            <section class="test-area">
+                <div id="word-display" class="word-display">
+                    <span class="placeholder-text">Press any key or click to start...</span>
+                </div>
+                <input type="text" id="typing-input" class="typing-input" autocomplete="off" autocorrect="off"
+                    autocapitalize="off" spellcheck="false">
+            </section>
+
+            <section class="keyboard-section">
+                <div id="keyboard" class="keyboard"></div>
+            </section>
+
+            <section class="controls">
+                <div class="mode-controls">
+                    <button class="mode-btn active" data-mode="words">words</button>
+                    <button class="mode-btn" data-mode="quotes">quotes</button>
+                </div>
+                <div class="option-controls">
+                    <button class="option-btn" data-option="punctuation">punctuation</button>
+                    <button class="option-btn" data-option="numbers">numbers</button>
+                </div>
+                <div class="timer-controls">
+                    <button class="time-btn active" data-time="15">15s</button>
+                    <button class="time-btn" data-time="30">30s</button>
+                    <button class="time-btn" data-time="60">60s</button>
+                </div>
+                <button id="restart-btn" class="restart-btn">Restart</button>
+            </section>
+
+            <section id="stats-display" class="stats-display hidden">
+                <div class="stat-card">
+                    <span class="stat-value" id="wpm-value">0</span>
+                    <span class="stat-label">WPM</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="raw-wpm-value">0</span>
+                    <span class="stat-label">Raw WPM</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="accuracy-value">0%</span>
+                    <span class="stat-label">Accuracy</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="consistency-value">0%</span>
+                    <span class="stat-label">Consistency</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="mistakes-value">0</span>
+                    <span class="stat-label">Mistakes</span>
+                </div>
+                <button id="save-btn" class="save-btn">Save Result</button>
+            </section>
+
+            <div id="timer-display" class="timer-display">
+                <span id="timer-value">15</span>
+            </div>
+
+            <section id="history-section" class="history-section">
+                <div class="history-header">
+                    <h2>History</h2>
+                    <button id="clear-history-btn" class="clear-history-btn">Clear</button>
+                </div>
+                <div id="history-list" class="history-list"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="keyboard.js"></script>
+    <script src="metrics.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# BMAD framework (development only)
+bmad/
+_bmad-output/
+
+# Large files
+words.txt
+
+# Environment
+.env
+.env.local
+*.key
+*.pem
