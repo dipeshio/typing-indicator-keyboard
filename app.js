@@ -721,9 +721,14 @@
      */
     function renderHistory() {
         const history = JSON.parse(localStorage.getItem('typingHistory') || '[]');
+        const summaryContainer = document.getElementById('history-summary');
+
+        if (!summaryContainer) return;
 
         if (history.length === 0) {
             historyList.innerHTML = '<div class="history-empty">No saved results yet</div>';
+            summaryContainer.innerHTML = '';
+            summaryContainer.classList.add('hidden');
             return;
         }
 
@@ -737,7 +742,8 @@
         const avgAcc = Math.round(totalAcc / count);
         const avgCons = Math.round(totalCons / count);
 
-        let html = history.slice(0, 10).map(item => {
+        // Render List
+        historyList.innerHTML = history.slice(0, 10).map(item => {
             const date = new Date(item.date);
             const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const modeStr = item.mode + (item.punctuation ? ' +punct' : '') + (item.numbers ? ' +nums' : '');
@@ -756,8 +762,9 @@
             `;
         }).join('');
 
-        // Append Average Row
-        html += `
+        // Render Summary
+        summaryContainer.classList.remove('hidden');
+        summaryContainer.innerHTML = `
             <div class="history-item history-average">
                 <span class="history-wpm">AVG: ${avgWpm} WPM</span>
                 <span class="history-details">
@@ -768,8 +775,6 @@
                 <span class="history-date">ALL TIME</span>
             </div>
         `;
-
-        historyList.innerHTML = html;
     }
 
     /**

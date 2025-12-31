@@ -711,10 +711,13 @@ body {
     font-size: 0.8rem;
 }
 
+.history-summary {
+    margin-top: 1rem;
+}
+
 .history-item.history-average {
     background-color: var(--bg-tertiary);
     border-color: var(--accent-primary);
-    margin-top: 1rem;
     font-weight: 500;
 }
 
