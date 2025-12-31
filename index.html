@@ -6,19 +6,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Typing Indicator Keyboard</title>
     <meta name="description" content="A minimalistic typing test with a reactive 62-key visual keyboard.">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="index.css">
 </head>
 
 <body>
-    <div class="app-container">
-        <header class="header">
-            <h1>Typing Indicator</h1>
-        </header>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <header class="header">
+                <h1>Typing<br>Indicator</h1>
+            </header>
 
+            <nav class="controls-nav">
+                <div class="control-group">
+                    <label>Mode</label>
+                    <div class="mode-controls vertical">
+                        <button class="mode-btn active" data-mode="words">words</button>
+                        <button class="mode-btn" data-mode="quotes">quotes</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Options</label>
+                    <div class="option-controls vertical">
+                        <button class="option-btn" data-option="punctuation">punctuation</button>
+                        <button class="option-btn" data-option="numbers">numbers</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Time</label>
+                    <div class="timer-controls vertical">
+                        <button class="time-btn active" data-time="15">15s</button>
+                        <button class="time-btn" data-time="30">30s</button>
+                        <button class="time-btn" data-time="60">60s</button>
+                    </div>
+                </div>
+            </nav>
+
+            <footer class="sidebar-footer">
+                <button id="restart-btn" class="restart-btn">Restart Test</button>
+            </footer>
+        </aside>
+
+        <!-- Main Content Area -->
         <main class="main-content">
+            <div id="check-area" class="check-area">
+                <div id="timer-display" class="timer-display">
+                    <span id="timer-value">15</span>
+                </div>
+            </div>
+
             <section class="test-area">
-                <div id="word-display" class="word-display">
-                    <span class="placeholder-text">Press any key or click to start...</span>
+                <div id="word-display-container">
+                    <div id="word-display" class="word-display">
+                        <span class="placeholder-text">Press any key or click to start...</span>
+                    </div>
                 </div>
                 <input type="text" id="typing-input" class="typing-input" autocomplete="off" autocorrect="off"
                     autocapitalize="off" spellcheck="false">
@@ -28,50 +72,36 @@
                 <div id="keyboard" class="keyboard"></div>
             </section>
 
-            <section class="controls">
-                <div class="mode-controls">
-                    <button class="mode-btn active" data-mode="words">words</button>
-                    <button class="mode-btn" data-mode="quotes">quotes</button>
-                </div>
-                <div class="option-controls">
-                    <button class="option-btn" data-option="punctuation">punctuation</button>
-                    <button class="option-btn" data-option="numbers">numbers</button>
-                </div>
-                <div class="timer-controls">
-                    <button class="time-btn active" data-time="15">15s</button>
-                    <button class="time-btn" data-time="30">30s</button>
-                    <button class="time-btn" data-time="60">60s</button>
-                </div>
-                <button id="restart-btn" class="restart-btn">Restart</button>
-            </section>
-
+            <!-- Results Section -->
             <section id="stats-display" class="stats-display hidden">
-                <div class="stat-card">
-                    <span class="stat-value" id="wpm-value">0</span>
-                    <span class="stat-label">WPM</span>
+                <div class="stats-summary">
+                    <div class="stat-card">
+                        <span class="stat-value" id="wpm-value">0</span>
+                        <span class="stat-label">WPM</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="raw-wpm-value">0</span>
+                        <span class="stat-label">Raw</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="accuracy-value">0%</span>
+                        <span class="stat-label">Acc</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="consistency-value">0%</span>
+                        <span class="stat-label">Cons</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="mistakes-value">0</span>
+                        <span class="stat-label">Err</span>
+                    </div>
+                    <button id="save-btn" class="save-btn">Save</button>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-value" id="raw-wpm-value">0</span>
-                    <span class="stat-label">Raw WPM</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-value" id="accuracy-value">0%</span>
-                    <span class="stat-label">Accuracy</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-value" id="consistency-value">0%</span>
-                    <span class="stat-label">Consistency</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-value" id="mistakes-value">0</span>
-                    <span class="stat-label">Mistakes</span>
-                </div>
-                <button id="save-btn" class="save-btn">Save Result</button>
-            </section>
 
-            <div id="timer-display" class="timer-display">
-                <span id="timer-value">15</span>
-            </div>
+                <div class="chart-container">
+                    <canvas id="results-chart"></canvas>
+                </div>
+            </section>
 
             <section id="history-section" class="history-section">
                 <div class="history-header">

@@ -237,6 +237,45 @@
         updateCurrentLetter();
     }
 
+    // Chart instance
+    let resultsChart = null;
+    let chartData = {
+        labels: [],
+        wpm: [],
+        raw: [],
+        accuracy: []
+    };
+
+    /**
+     * Scroll the word display to keep current line in view
+     */
+    function autoScroll() {
+        const currentWord = wordDisplay.querySelector(`[data-word-index="${state.currentWordIndex}"]`);
+        if (!currentWord) return;
+
+        const container = document.getElementById('word-display-container');
+        const wordTop = currentWord.offsetTop;
+        const wordHeight = currentWord.offsetHeight;
+        const containerHeight = container.offsetHeight;
+
+        // Simple scroll logic: keep current word roughly in the middle vertical zone
+        // But since we want "smooth" reading, let's scroll when we hit the second line of view
+        const currentScroll = container.scrollTop;
+
+        // If word is near the bottom of view
+        if (wordTop > currentScroll + containerHeight / 2) {
+            container.scrollTo({
+                top: wordTop - 40, // Scroll to show this line and a bit of previous
+                behavior: 'smooth'
+            });
+        }
+
+        // If word is near top (e.g. after restart), reset
+        if (state.currentWordIndex === 0) {
+            container.scrollTo({ top: 0, behavior: 'auto' });
+        }
+    }
+
     /**
      * Update the visual indicator for current letter
      */
@@ -254,6 +293,9 @@
                 currentLetter.classList.add('current');
             }
         }
+
+        // Trigger auto-scroll
+        autoScroll();
     }
 
     /**
@@ -266,14 +308,127 @@
         state.isFinished = false;
         statsDisplay.classList.add('hidden');
 
+        // Reset chart data
+        chartData = {
+            labels: [],
+            wpm: [],
+            raw: [],
+            accuracy: []
+        };
+
         state.timerInterval = setInterval(() => {
             state.timeRemaining--;
             timerValue.textContent = state.timeRemaining;
+
+            // Record metrics for chart every second
+            const elapsed = state.testDuration - state.timeRemaining;
+            if (elapsed > 0) {
+                const currentMetrics = MetricsModule.getAllMetrics(
+                    state.correctChars,
+                    state.totalChars,
+                    state.mistakes,
+                    elapsed
+                );
+
+                chartData.labels.push(elapsed);
+                chartData.wpm.push(currentMetrics.wpm);
+                chartData.raw.push(currentMetrics.rawWpm);
+                chartData.accuracy.push(currentMetrics.accuracy);
+            }
 
             if (state.timeRemaining <= 0) {
                 endTest();
             }
         }, 1000);
+    }
+
+    /**
+     * Render the results chart
+     */
+    function renderChart() {
+        const ctx = document.getElementById('results-chart').getContext('2d');
+
+        if (resultsChart) {
+            resultsChart.destroy();
+        }
+
+        resultsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: [
+                    {
+                        label: 'WPM',
+                        data: chartData.wpm,
+                        borderColor: '#d4a574', // accent-primary
+                        backgroundColor: 'rgba(212, 165, 116, 0.1)',
+                        tension: 0.4,
+                        borderWidth: 2,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Raw WPM',
+                        data: chartData.raw,
+                        borderColor: '#57534e', // text-dim
+                        borderDash: [5, 5],
+                        tension: 0.4,
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Accuracy %',
+                        data: chartData.accuracy,
+                        borderColor: '#86efac', // accent-success
+                        tension: 0.4,
+                        borderWidth: 2,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#a8a29e', // text-secondary
+                            font: { family: 'Inter' }
+                        }
+                    },
+                    tooltip: {
+                        enabled: true
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: '#2d2d2d' },
+                        ticks: { color: '#a8a29e' }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        grid: { color: '#2d2d2d' },
+                        ticks: { color: '#d4a574' },
+                        title: { display: true, text: 'WPM', color: '#a8a29e' }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: { drawOnChartArea: false },
+                        ticks: { color: '#86efac' },
+                        min: 0,
+                        max: 100
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -310,6 +465,8 @@
 
         statsDisplay.classList.remove('hidden');
         saveBtn.disabled = false;
+
+        renderChart();
     }
 
     /**
