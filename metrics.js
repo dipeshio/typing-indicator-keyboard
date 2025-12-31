@@ -50,12 +50,21 @@ const MetricsModule = {
     },
 
     /**
-     * Calculate Accuracy percentage
-     * @param {number} correctChars - Number of correct characters
-     * @param {number} totalChars - Total characters typed
+     * Calculate Accuracy percentage (Strict: based on keystrokes)
+     * @param {number} totalKeystrokes - Total keys pressed
+     * @param {number} mistakeKeystrokes - Total wrong keys pressed
      * @returns {number} Accuracy percentage (0-100)
      */
-    calculateAccuracy(correctChars, totalChars) {
+    calculateAccuracy(totalKeystrokes, mistakeKeystrokes) {
+        if (totalKeystrokes === 0) return 100;
+        const accuracy = ((totalKeystrokes - mistakeKeystrokes) / totalKeystrokes) * 100;
+        return Math.max(0, Math.round(accuracy));
+    },
+
+    /**
+     * Legacy Accuracy (based on final text) - kept for reference if needed
+     */
+    calculateFinalAccuracy(correctChars, totalChars) {
         if (totalChars <= 0) return 100;
         return Math.round((correctChars / totalChars) * 100);
     },
@@ -94,13 +103,15 @@ const MetricsModule = {
      * @param {number} totalChars
      * @param {number} mistakes
      * @param {number} elapsedSeconds
+     * @param {number} totalKeystrokes
+     * @param {number} mistakeKeystrokes
      * @returns {Object} All metrics
      */
-    getAllMetrics(correctChars, totalChars, mistakes, elapsedSeconds) {
+    getAllMetrics(correctChars, totalChars, mistakes, elapsedSeconds, totalKeystrokes, mistakeKeystrokes) {
         return {
             wpm: this.calculateWPM(correctChars, elapsedSeconds),
             rawWpm: this.calculateRawWPM(totalChars, elapsedSeconds),
-            accuracy: this.calculateAccuracy(correctChars, totalChars),
+            accuracy: this.calculateAccuracy(totalKeystrokes, mistakeKeystrokes),
             consistency: this.calculateConsistency(),
             mistakes: mistakes
         };

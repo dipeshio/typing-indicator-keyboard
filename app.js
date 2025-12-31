@@ -64,7 +64,14 @@
         // Relationships
         'family', 'friend', 'group', 'team', 'company', 'community', 'society', 'member',
         'leader', 'parent', 'mother', 'father', 'brother', 'sister', 'teacher', 'student',
-        'doctor', 'artist', 'writer', 'player', 'worker', 'manager', 'customer', 'partner'
+        'doctor', 'artist', 'writer', 'player', 'worker', 'manager', 'customer', 'partner',
+        // Advanced vocabulary
+        'structure', 'endurance', 'encourage', 'anecdote', 'homework', 'textbook', 'heighten',
+        'relic', 'lantern', 'phallic', 'exigency', 'homicide', 'forging', 'deletion',
+        'sympathy', 'notebook', 'glitching', 'recycler', 'boosting', 'distill', 'maidenly',
+        'becharm', 'outcome', 'debtor', 'surveyal', 'should', 'magic', 'minimum',
+        'contrast', 'fluidity', 'footwear', 'treasury', 'standard', 'diction', 'biology',
+        'physics', 'chemistry', 'algebra', 'geometry', 'market', 'stock', 'trade', 'economy'
     ];
 
     // Quote list for real text mode - longer passages
@@ -99,6 +106,10 @@
         correctChars: 0,
         totalChars: 0,
         mistakes: 0,
+        // Accuracy tracking
+        totalKeystrokes: 0,
+        mistakeKeystrokes: 0,
+
         timerInterval: null,
         mode: 'words',
         options: {
@@ -131,7 +142,7 @@
     /**
      * Generate natural sentences for the test
      */
-    function generateWords(count = 50) {
+    function generateWords(count = 500) {
         const words = [];
         let sentenceLength = 0;
         const targetSentenceLength = () => Math.floor(Math.random() * 8) + 5; // 5-12 words per sentence
@@ -308,6 +319,10 @@
         state.isFinished = false;
         statsDisplay.classList.add('hidden');
 
+        // Reset metrics
+        state.totalKeystrokes = 0;
+        state.mistakeKeystrokes = 0;
+
         // Reset chart data
         chartData = {
             labels: [],
@@ -327,7 +342,9 @@
                     state.correctChars,
                     state.totalChars,
                     state.mistakes,
-                    elapsed
+                    elapsed,
+                    state.totalKeystrokes,
+                    state.mistakeKeystrokes
                 );
 
                 chartData.labels.push(elapsed);
@@ -445,7 +462,9 @@
             state.correctChars,
             state.totalChars,
             state.mistakes,
-            elapsedSeconds > 0 ? elapsedSeconds : state.testDuration
+            elapsedSeconds > 0 ? elapsedSeconds : state.testDuration,
+            state.totalKeystrokes,
+            state.mistakeKeystrokes
         );
 
         state.lastMetrics = {
@@ -461,7 +480,7 @@
         rawWpmValue.textContent = metrics.rawWpm;
         accuracyValue.textContent = metrics.accuracy + '%';
         consistencyValue.textContent = metrics.consistency + '%';
-        mistakesValue.textContent = metrics.mistakes;
+        mistakesValue.textContent = metrics.mistakes + ' (' + state.mistakeKeystrokes + ')'; // Show uncorrected (corrected)
 
         statsDisplay.classList.remove('hidden');
         saveBtn.disabled = false;
@@ -486,6 +505,8 @@
             correctChars: 0,
             totalChars: 0,
             mistakes: 0,
+            totalKeystrokes: 0,
+            mistakeKeystrokes: 0,
             timerInterval: null,
             lastMetrics: null
         };
@@ -502,6 +523,9 @@
      * Handle keydown event
      */
     function handleKeyDown(e) {
+        // Ignore modifiers and non-typing keys
+        if (e.ctrlKey || e.altKey || e.metaKey) return;
+
         // Activate visual key
         KeyboardModule.activateKey(e.code);
 
@@ -515,9 +539,33 @@
         // Don't process if test is finished
         if (state.isFinished) return;
 
-        // Record for consistency
-        if (e.key.length === 1) {
+        // Strict Accuracy Tracking
+        // Count every printable keystroke and backspace
+        if (e.key.length === 1 || e.key === 'Backspace') {
+            state.totalKeystrokes++;
             MetricsModule.recordKeystroke();
+
+            // Logic for mistakes:
+            // If it's a printable char (not backspace)
+            if (e.key.length === 1) {
+                const currentWord = state.words[state.currentWordIndex];
+                let expectedChar = '';
+
+                // Determine expected char
+                if (state.currentLetterIndex < currentWord.length) {
+                    expectedChar = currentWord[state.currentLetterIndex];
+                } else if (state.currentLetterIndex === currentWord.length) {
+                    expectedChar = ' '; // Expected space
+                } else {
+                    // Start of overtyping - definitely a mistake unless handling space skip?
+                    expectedChar = ' ';
+                }
+
+                // Check mismatch
+                if (e.key !== expectedChar) {
+                    state.mistakeKeystrokes++;
+                }
+            }
         }
     }
 
@@ -679,7 +727,17 @@
             return;
         }
 
-        historyList.innerHTML = history.slice(0, 10).map(item => {
+        // Calculate averages
+        const count = history.length;
+        const totalWpm = history.reduce((acc, item) => acc + item.wpm, 0);
+        const totalAcc = history.reduce((acc, item) => acc + item.accuracy, 0);
+        const totalCons = history.reduce((acc, item) => acc + item.consistency, 0);
+
+        const avgWpm = Math.round(totalWpm / count);
+        const avgAcc = Math.round(totalAcc / count);
+        const avgCons = Math.round(totalCons / count);
+
+        let html = history.slice(0, 10).map(item => {
             const date = new Date(item.date);
             const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const modeStr = item.mode + (item.punctuation ? ' +punct' : '') + (item.numbers ? ' +nums' : '');
@@ -697,6 +755,21 @@
                 </div>
             `;
         }).join('');
+
+        // Append Average Row
+        html += `
+            <div class="history-item history-average">
+                <span class="history-wpm">AVG: ${avgWpm} WPM</span>
+                <span class="history-details">
+                    <span>${avgAcc}% acc</span>
+                    <span>${avgCons}% cons</span>
+                    <span>(${count} tests)</span>
+                </span>
+                <span class="history-date">ALL TIME</span>
+            </div>
+        `;
+
+        historyList.innerHTML = html;
     }
 
     /**

@@ -711,6 +711,13 @@ body {
     font-size: 0.8rem;
 }
 
+.history-item.history-average {
+    background-color: var(--bg-tertiary);
+    border-color: var(--accent-primary);
+    margin-top: 1rem;
+    font-weight: 500;
+}
+
 .history-item .history-wpm {
     color: var(--accent-primary);
     font-weight: 600;
