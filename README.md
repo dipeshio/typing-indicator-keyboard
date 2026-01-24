@@ -1,13 +1,15 @@
-# ⌨️ typing-test-keyboard
+# typing-test-keyboard
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+Browser typing test with visual keyboard highlighting, WPM, and accuracy tracking.
 
-A minimalistic browser typing test with a reactive 60% keyboard visualization to track keystrokes and performance.
+## Files
+- index.html – entry point
+- app.js, keyboard.js, metrics.js – logic
+- index.css – styling
+- image.png – preview
 
-## Setup
-
-Open `index.html` in a browser.
+## Use
+Open index.html in a modern browser and start typing.
 
 ## License
-
-MIT © 2026 dipeshio
+MIT
