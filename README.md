@@ -1,22 +1,13 @@
-# Typing Indicator Keyboard
+# ⌨️ typing-test-keyboard
 
-A minimalistic typing test with a reactive 62-key visual keyboard.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-![Typing Indicator Keyboard Preview](image.png)
+A minimalistic browser typing test with a reactive 60% keyboard visualization to track keystrokes and performance.
 
-## Features
-
-- 60% ANSI keyboard layout with glow-on-keypress effect
-- Typing tests (15s, 30s, 60s)
-- Metrics: WPM, Raw WPM, Accuracy, Consistency
-- Modes: words, quotes
-- Options: punctuation, numbers
-- Local history tracking
-
-## Usage
+## Setup
 
 Open `index.html` in a browser.
 
 ## License
 
-MIT
+MIT © 2026 dipeshio
