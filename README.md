@@ -1,22 +1,13 @@
-# typing-test-keyboard
+# ⌨️ typing-test-keyboard
 
-Interactive typing test web application with a visual keyboard display. Tracks typing speed (WPM) and accuracy metrics.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-## Features
-- Real-time WPM tracking
-- Accuracy statistics
-- Visual keyboard highlighting
-- Multiple test modes
+A minimalistic browser typing test with a reactive 60% keyboard visualization to track keystrokes and performance.
 
-## Files
-- `index.html` - Main page
-- `app.js` - Core application logic
-- `keyboard.js` - Keyboard visualization
-- `metrics.js` - Performance tracking
-- `index.css` - Styling
+## Setup
 
-## Usage
-Open `index.html` in a web browser and start typing!
+Open `index.html` in a browser.
 
 ## License
-MIT
+
+MIT © 2026 dipeshio
